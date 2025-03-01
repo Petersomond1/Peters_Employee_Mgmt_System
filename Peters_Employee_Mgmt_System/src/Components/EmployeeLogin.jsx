@@ -160,6 +160,20 @@ const EmployeeLogin = () => {
               </label>
             </div>
           </form>
+          <button
+            onClick={() => navigate("/forgot_password")}
+            style={{
+              fontSize: "14px",
+              color: "blue",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              textDecoration: "underline",
+              marginTop: "10px",
+            }}
+          >
+            Forgot Password?
+          </button>
         </div>
       )}
     </div>

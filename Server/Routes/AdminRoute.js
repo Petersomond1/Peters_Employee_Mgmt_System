@@ -11,16 +11,6 @@ import path from 'path';
 
 const router = express.Router();
 
-// router.post('/add_admin', (req, res) => {
-//     const { name, email, password, role } = req.body;
-//     const hashedPassword = bcrypt.hashSync(password, 10);
-
-//     const sql = 'INSERT INTO admin (name, email, password, hashedPassword, role) VALUES (?, ?, ?, ?, ?)';
-//     con.query(sql, [name, email, hashedPassword, hashedPassword, role], (err, result) => {
-//         if (err) return res.json({ Status: false, Error: "Query error" });
-//         return res.json({ Status: true });
-//     });
-// });
 
 router.post('/add_admin', (req, res) => {
     const { name, email, password, role } = req.body;

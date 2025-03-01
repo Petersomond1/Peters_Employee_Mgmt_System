@@ -14,6 +14,7 @@ import DeleteEmployee from './Components/DeleteEmployee'
 import EmployeeLogin from './Components/EmployeeLogin'
 import Employee_Profile from './Components/Employee_Profile.jsx'
 import ProtectRoute from './Components/ProtectRoute.jsx'
+import ForgotPassword from './Components/ForgotPassword.jsx'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       <Routes>
         <Route path="/" element={<EmployeeLogin />} />
         <Route path="/employee_profile/:id" element={<Employee_Profile />} />
+        <Route path="/forgot_password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<ProtectRoute><Dashboard /></ProtectRoute>}>
           <Route path='' element={<Home />} />
           <Route path='/dashboard/employee' element={<Employee />} />

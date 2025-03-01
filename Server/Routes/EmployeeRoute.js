@@ -3,6 +3,7 @@ import con from "../utils/db.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import cookieParser from "cookie-parser";
+import crypto from "crypto";
 
 const router = express.Router();
 
@@ -59,6 +60,41 @@ router.post("/login", (req, res) => {
       }
     } else {
       return res.json({ loginStatus: false, Error: "Email does not exist" });
+    }
+  });
+});
+
+router.post("/forgot_password", (req, res) => {
+  const { email } = req.body;
+  const code = crypto.randomBytes(3).toString("hex"); // Generate a 6-character alphanumeric code
+
+  const sql = "UPDATE employeelist SET password = ? WHERE email = ?";
+  con.query(sql, [code, email], (err, result) => {
+    if (err) return res.json({ success: false, message: "Query error" });
+    if (result.affectedRows > 0) {
+      // Send code via email or SMS (implementation not shown here)
+      return res.json({ success: true });
+    } else {
+      return res.json({ success: false, message: "Email not found" });
+    }
+  });
+});
+
+router.post("/reset_password", (req, res) => {
+  const { email, code, newPassword } = req.body;
+
+  const sql = "SELECT * FROM employeelist WHERE email = ? AND password = ?";
+  con.query(sql, [email, code], (err, result) => {
+    if (err) return res.json({ success: false, message: "Query error" });
+    if (result.length > 0) {
+      const hashedPassword = bcrypt.hashSync(newPassword, 10);
+      const updateSql = "UPDATE employeelist SET password = ?, hashedPassword = ? WHERE email = ?";
+      con.query(updateSql, [hashedPassword, hashedPassword, email], (err, updateResult) => {
+        if (err) return res.json({ success: false, message: "Query error" });
+        return res.json({ success: true });
+      });
+    } else {
+      return res.json({ success: false, message: "Invalid code" });
     }
   });
 });
