@@ -11,6 +11,17 @@ import path from 'path';
 
 const router = express.Router();
 
+// router.post('/add_admin', (req, res) => {
+//     const { name, email, password, role } = req.body;
+//     const hashedPassword = bcrypt.hashSync(password, 10);
+
+//     const sql = 'INSERT INTO admin (name, email, password, hashedPassword, role) VALUES (?, ?, ?, ?, ?)';
+//     con.query(sql, [name, email, hashedPassword, hashedPassword, role], (err, result) => {
+//         if (err) return res.json({ Status: false, Error: "Query error" });
+//         return res.json({ Status: true });
+//     });
+// });
+
 router.post('/add_admin', (req, res) => {
     const { name, email, password, role } = req.body;
     const hashedPassword = bcrypt.hashSync(password, 10);
@@ -23,32 +34,30 @@ router.post('/add_admin', (req, res) => {
 });
 
 
-router.post('/adminlogin', (req, res) => {
-    const sql = 'SELECT * FROM admin WHERE email = ? AND password = ?';
-               con.query(sql, [req.body.email, req.body.password], (err, result) => {
-                   if (err) return res.json({ loginStatus: false, Error: "Query error" });
-       if (result.length > 0) {
-           // Temporarily bypass the password check
-           // const isPasswordValid = bcrypt.compareSync(req.body.password, result[0].password);
-           const isPasswordValid = req.body.password === '12345'; // Temporary bypass
+// router.post('/adminlogin', (req, res) => {
+//     const sql = 'SELECT * FROM admin WHERE email = ?';
+//     con.query(sql, [req.body.email], (err, result) => {
+//         if (err) return res.json({ loginStatus: false, Error: "Query error" });
+//         if (result.length > 0) {
+//             const isPasswordValid = bcrypt.compareSync(req.body.password, result[0].password);
+//             if (isPasswordValid) {
+//                 const email = result[0].email;
+//                 const token = jwt.sign(
+//                     { role: "admin", email: email, id: result[0].id },
+//                     "jwt_Admin_secret_key",
+//                     { expiresIn: "1d" }
+//                 );
+//                 res.cookie("token", token);
+//                 return res.json({ loginStatus: true });
+//             } else {
+//                 return res.json({ loginStatus: false, Error: "wrong email or password" });
+//             }
+//         } else {
+//             return res.json({ loginStatus: false, Error: "wrong email or password" });
+//         }
+//     });
+// });
 
-           if (isPasswordValid) {
-               const email = result[0].email;
-               const token = jwt.sign(
-                   { role: "admin", email: email, id: result[0].id},
-                   "jwt_Admin_secret_key",
-                   { expiresIn: "1d" }
-               );
-               res.cookie("token", token );
-               return res.json({ loginStatus: true });
-           } else {
-               return res.json({ loginStatus: false, Error: "wrong email or password" });
-           }
-       } else {
-           return res.json({ loginStatus: false, Error: "wrong email or password" });
-       }
-   });
-});
 
 router.get('/department', (req, res) => {
     const sql = 'SELECT * FROM department';

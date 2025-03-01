@@ -485,3 +485,87 @@
 .profile-container .profile-info .info-field .field-value {
   color: #666;
 } 
+
+/* .............add-employee.css.............*/
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.login_submit_btn {
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .6rem;
+  transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+  color: #fff;
+  background-color: #28a745;
+  border-color: #28a745;
+  width: 100%;
+  margin-bottom: 2px;
+  font-size: 20px;
+  color: blue;
+  width: 50%;
+  justify-content: center;
+  margin-left: 22%;
+  display: inline-block;
+}
+
+.loginDoor {
+  background: url('/Images/logo2.png');
+  background: linear-gradient(rgba(11, 11, 11, 0.5), rgba(10, 10, 10, 0.5)), url('/Images/logo2.png');
+  margin-bottom: auto;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 125%;
+}
+
+.loginForm {
+  background-color: rgba(1, 32, 93, 0.6);
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.button-danger-display {
+  color: yellow;
+  padding: 10px;
+  border-radius: 0;
+  display: inline-block;
+  width: 100%;
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 20px;
+  text-align: center;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.button-danger-display.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.login-button {
+  font-size: 20px;
+  color: blue;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 2px solid blue;
+  cursor: pointer;
+  background-color: transparent;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: blue;
+  color: white;
+}
