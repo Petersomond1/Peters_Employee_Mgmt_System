@@ -4,6 +4,9 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import cookieParser from "cookie-parser";
 import crypto from "crypto";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const router = express.Router();
 
@@ -32,7 +35,7 @@ router.post("/login", (req, res) => {
             if (err) return res.json({ loginStatus: false, Error: "Query error" });
             const token = jwt.sign(
               { role: role, email: email, id: user.id },
-              role === "admin" ? "jwt_Admin_secret_key" : "jwt_employee_secret_key",
+              role === "admin" ? process.env.JWT_ADMIN_SECRET : process.env.JWT_EMPLOYEE_SECRET,
               { expiresIn: "1d" }
             );
             res.cookie("token", token);
@@ -48,7 +51,7 @@ router.post("/login", (req, res) => {
           if (response) {
             const token = jwt.sign(
               { role: role, email: email, id: user.id },
-              role === "admin" ? "jwt_Admin_secret_key" : "jwt_employee_secret_key",
+              role === "admin" ? process.env.JWT_ADMIN_SECRET : process.env.JWT_EMPLOYEE_SECRET,
               { expiresIn: "1d" }
             );
             res.cookie("token", token);
