@@ -34,31 +34,6 @@ router.post('/add_admin', (req, res) => {
 });
 
 
-// router.post('/adminlogin', (req, res) => {
-//     const sql = 'SELECT * FROM admin WHERE email = ?';
-//     con.query(sql, [req.body.email], (err, result) => {
-//         if (err) return res.json({ loginStatus: false, Error: "Query error" });
-//         if (result.length > 0) {
-//             const isPasswordValid = bcrypt.compareSync(req.body.password, result[0].password);
-//             if (isPasswordValid) {
-//                 const email = result[0].email;
-//                 const token = jwt.sign(
-//                     { role: "admin", email: email, id: result[0].id },
-//                     "jwt_Admin_secret_key",
-//                     { expiresIn: "1d" }
-//                 );
-//                 res.cookie("token", token);
-//                 return res.json({ loginStatus: true });
-//             } else {
-//                 return res.json({ loginStatus: false, Error: "wrong email or password" });
-//             }
-//         } else {
-//             return res.json({ loginStatus: false, Error: "wrong email or password" });
-//         }
-//     });
-// });
-
-
 router.get('/department', (req, res) => {
     const sql = 'SELECT * FROM department';
     con.query(sql, (err, result) => {

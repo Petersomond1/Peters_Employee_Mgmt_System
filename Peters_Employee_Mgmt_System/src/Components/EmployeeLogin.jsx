@@ -21,10 +21,13 @@ const EmployeeLogin = () => {
     e.preventDefault();
 
     axios
-      .post("http://localhost:3000/login", values)
+      .post("http://localhost:3000/employee/login", values)
       .then((result) => {
         if (result.data.loginStatus) {
           localStorage.setItem("valid", true);
+          if (result.data.firstTime) {
+            alert("This is your first time logging in. Please change your password.");
+          }
           if (result.data.role === "admin") {
             navigate("/dashboard");
           } else if (result.data.role === "employee") {
