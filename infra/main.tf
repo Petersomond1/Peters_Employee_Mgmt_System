@@ -1,0 +1,109 @@
+provider "aws" {
+  region = "us-east-1"
+}
+
+# EC2 Instance for Backend
+resource "aws_instance" "backend" {
+  ami           = "ami-05b10e08d247fb927"  # Replace with your desired AMI ID
+  instance_type = "t2.micro"
+  key_name      = "Petersomond"
+  security_groups = ["backend-security-group"]
+  tags = {
+    Name = "BackendInstance"
+  }
+}
+
+# Security Group for Backend
+resource "aws_security_group" "backend_sg" {
+  name        = "backend-security-group"
+  description = "Allow inbound traffic for backend"
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# S3 Bucket for Frontend
+resource "aws_s3_bucket" "frontend" {
+  bucket = "my-react-app-frontend"
+  acl    = "public-read"
+}
+
+# RDS for Database
+resource "aws_db_instance" "rds" {
+  engine         = "mysql"
+  instance_class = "db.t3.micro"
+  allocated_storage = 20
+  name           = "petersemployeemgmtsystemdb"
+  username       = "Petersomond"
+  password       = "MONDAYtwo12"
+  publicly_accessible = true
+  skip_final_snapshot = true
+}
+
+# CloudFront Distribution for S3
+resource "aws_cloudfront_distribution" "frontend_distribution" {
+  origin {
+    domain_name = aws_s3_bucket.frontend.bucket_regional_domain_name
+    origin_id   = "S3-my-react-app-frontend"
+  }
+
+  enabled             = true
+  is_ipv6_enabled     = true
+  comment             = "CloudFront distribution for my React app"
+  default_root_object = "index.html"
+
+  default_cache_behavior {
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "S3-my-react-app-frontend"
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+
+    viewer_protocol_policy = "redirect-to-https"
+    min_ttl                = 0
+    default_ttl            = 3600
+    max_ttl                = 86400
+  }
+
+  price_class = "PriceClass_100"
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+}
+
+# Route 53 Domain
+resource "aws_route53_zone" "main" {
+  name = "petersomond.com"
+}
+
+resource "aws_route53_record" "frontend" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "www.microfinancebank"
+  type    = "A"
+  alias {
+    name                   = aws_cloudfront_distribution.frontend_distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.frontend_distribution.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
