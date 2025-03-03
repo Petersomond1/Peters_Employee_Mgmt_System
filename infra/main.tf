@@ -1,8 +1,24 @@
 provider "aws" {
-  region = "us-east-1"
+  region     = "us-west-2"
+  access_key = var.aws_access_key_id
+  secret_key = var.aws_secret_access_key
 }
 
-# EC2 Instance for Backend
+variable "aws_access_key_id" {
+  description = "AWS Access Key ID"
+  default     = ""
+}
+
+variable "aws_secret_access_key" {
+  description = "AWS Secret Access Key"
+  default     = ""
+}
+
+locals {
+  aws_access_key_id     = getenv("AWS_ACCESS_KEY_ID")
+  aws_secret_access_key = getenv("AWS_SECRET_ACCESS_KEY")
+}
+
 resource "aws_instance" "backend" {
   ami           = "ami-05b10e08d247fb927"  # Replace with your desired AMI ID
   instance_type = "t2.micro"
@@ -34,23 +50,23 @@ resource "aws_security_group" "backend_sg" {
 # S3 Bucket for Frontend
 resource "aws_s3_bucket" "frontend" {
   bucket = "my-react-app-frontend"
-  }
-  
-  resource "aws_s3_bucket_acl" "frontend_acl" {
-    bucket = aws_s3_bucket.frontend.id
-    acl    = "public-read"
+}
+
+resource "aws_s3_bucket_acl" "frontend_acl" {
+  bucket = aws_s3_bucket.frontend.id
+  acl    = "public-read"
 }
 
 # RDS for Database
 resource "aws_db_instance" "default" {
-  engine             = "mysql"
-  instance_class     = "db.t3.micro"
-  allocated_storage  = 20
-  db_name            = "petersemployeemgmtsystemdb"
-  username           = "Petersomond"
-  password           = "MONDAYtwo12"
-  publicly_accessible = true
-  skip_final_snapshot = true
+  engine               = "mysql"
+  instance_class       = "db.t3.micro"
+  allocated_storage    = 20
+  db_name              = "petersemployeemgmtsystemdb"
+  username             = "Petersomond"
+  password             = "MONDAYtwo12"
+  publicly_accessible  = true
+  skip_final_snapshot  = true
 }
 
 # CloudFront Distribution for S3
