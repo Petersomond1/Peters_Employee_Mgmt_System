@@ -47,9 +47,21 @@ resource "aws_s3_bucket" "frontend" {
   bucket = "petersemployeemgmtsystem-s3"
 }
 
-resource "aws_s3_bucket_acl" "frontend_acl" {
+# Example Bucket Policy
+resource "aws_s3_bucket_policy" "frontend_policy" {
   bucket = aws_s3_bucket.frontend.id
-  acl    = "public-read"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = "*",
+        Action = "s3:GetObject",
+        Resource = "arn:aws:s3:::petersemployeemgmtsystem-s3/*"
+      }
+    ]
+  })
 }
 
 # RDS for Database
