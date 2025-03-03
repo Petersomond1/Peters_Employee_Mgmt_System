@@ -11041,14 +11041,25 @@ GitHub Copilot: To achieve a secure, automated CI/CD pipeline for deploying your
 
 ```hcl
 provider "aws" {
-  region = "us-east-1"
+  region     = "us-east-1"
+  access_key = var.aws_access_key_id
+  secret_key = var.aws_secret_access_key
 }
 
-# EC2 Instance for Backend
+variable "aws_access_key_id" {
+  description = "AWS Access Key ID"
+  default     = ""  # Default can be empty if you want to set it via environment variable
+}
+
+variable "aws_secret_access_key" {
+  description = "AWS Secret Access Key"
+  default     = ""  # Default can be empty if you want to set it via environment variable
+}
+
 resource "aws_instance" "backend" {
-  ami           = "ami-12345678"  # Replace with your desired AMI ID
+  ami           = "ami-05b10e08d247fb927"  # Replace with your desired AMI ID
   instance_type = "t2.micro"
-  key_name      = "my-key"
+  key_name      = "Petersomond"
   security_groups = ["backend-security-group"]
   tags = {
     Name = "BackendInstance"
@@ -11075,27 +11086,43 @@ resource "aws_security_group" "backend_sg" {
 
 # S3 Bucket for Frontend
 resource "aws_s3_bucket" "frontend" {
-  bucket = "peters-employee-mgmt-system-frontend"
-  acl    = "public-read"
+  bucket = "petersemployeemgmtsystem-s3"
+}
+
+# Example Bucket Policy
+resource "aws_s3_bucket_policy" "frontend_policy" {
+  bucket = aws_s3_bucket.frontend.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = "*",
+        Action = "s3:GetObject",
+        Resource = "arn:aws:s3:::petersemployeemgmtsystem-s3/*"
+      }
+    ]
+  })
 }
 
 # RDS for Database
-resource "aws_db_instance" "rds" {
-  engine         = "mysql"
-  instance_class = "db.t3.micro"
-  allocated_storage = 20
-  name           = "petersemployeemgmtsystem"
-  username       = "Petersomond"
-  password       = "MONDAYtwo12"
-  publicly_accessible = true
-  skip_final_snapshot = true
+resource "aws_db_instance" "default" {
+  engine               = "mysql"
+  instance_class       = "db.t3.micro"
+  allocated_storage    = 20
+  db_name              = "petersemployeemgmtsystemdb"
+  username             = "Petersomond"
+  password             = "MONDAYtwo12"
+  publicly_accessible  = true
+  skip_final_snapshot  = true
 }
 
 # CloudFront Distribution for S3
 resource "aws_cloudfront_distribution" "frontend_distribution" {
   origin {
     domain_name = aws_s3_bucket.frontend.bucket_regional_domain_name
-    origin_id   = "S3-my-react-app-frontend"
+    origin_id   = "S3-petersemployeemgmtsystem-s3"
   }
 
   enabled             = true
@@ -11106,7 +11133,7 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "S3-my-react-app-frontend"
+    target_origin_id = "S3-petersemployeemgmtsystem-s3"
 
     forwarded_values {
       query_string = false
