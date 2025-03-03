@@ -23,8 +23,35 @@ resource "aws_instance" "backend" {
     Name = "BackendInstance"
   }
 }
+data "aws_security_group" "existing_backend_sg" {
+  filter {
+    name   = "group-name"
+    values = ["backend-security-group"]
+  }
+  vpc_id = "vpc-0a39ca2f70436f917"
+}
 
-# Security Group for Backend
+resource "aws_security_group" "backend_sg" {
+  count = length(data.aws_security_group.existing_backend_sg.ids) == 0 ? 1 : 0
+
+  name        = "backend-security-group"
+  description = "Security group for backend servers"
+  vpc_id      = "vpc-0a39ca2f70436f917"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 resource "aws_security_group" "backend_sg" {
   name        = "backend-security-group"
   description = "Allow inbound traffic for backend"
@@ -42,8 +69,15 @@ resource "aws_security_group" "backend_sg" {
   }
 }
 
+# Check if S3 Bucket already exists
+data "aws_s3_bucket" "existing_bucket" {
+  bucket = "petersemployeemgmtsystem-s3"
+}
+
 # S3 Bucket for Frontend
 resource "aws_s3_bucket" "frontend" {
+  count = length(data.aws_s3_bucket.existing_bucket.id) == 0 ? 1 : 0
+
   bucket = "petersemployeemgmtsystem-s3"
 }
 
