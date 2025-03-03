@@ -6,17 +6,12 @@ provider "aws" {
 
 variable "aws_access_key_id" {
   description = "AWS Access Key ID"
-  default     = ""
+  default     = ""  # Default can be empty if you want to set it via environment variable
 }
 
 variable "aws_secret_access_key" {
   description = "AWS Secret Access Key"
-  default     = ""
-}
-
-locals {
-  aws_access_key_id     = getenv("AWS_ACCESS_KEY_ID")
-  aws_secret_access_key = getenv("AWS_SECRET_ACCESS_KEY")
+  default     = ""  # Default can be empty if you want to set it via environment variable
 }
 
 resource "aws_instance" "backend" {
