@@ -1,5 +1,5 @@
 provider "aws" {
-  region     = "us-west-2"
+  region     = "us-east-1"
   access_key = var.aws_access_key_id
   secret_key = var.aws_secret_access_key
 }
@@ -44,7 +44,7 @@ resource "aws_security_group" "backend_sg" {
 
 # S3 Bucket for Frontend
 resource "aws_s3_bucket" "frontend" {
-  bucket = "my-react-app-frontend"
+  bucket = "petersemployeemgmtsystem_s3"
 }
 
 resource "aws_s3_bucket_acl" "frontend_acl" {
@@ -68,7 +68,7 @@ resource "aws_db_instance" "default" {
 resource "aws_cloudfront_distribution" "frontend_distribution" {
   origin {
     domain_name = aws_s3_bucket.frontend.bucket_regional_domain_name
-    origin_id   = "S3-my-react-app-frontend"
+    origin_id   = "S3-petersemployeemgmtsystem_s3"
   }
 
   enabled             = true
@@ -79,7 +79,7 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "S3-my-react-app-frontend"
+    target_origin_id = "S3-petersemployeemgmtsystem_s3"
 
     forwarded_values {
       query_string = false
