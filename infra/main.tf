@@ -42,12 +42,13 @@ resource "aws_s3_bucket" "frontend" {
 }
 
 # RDS for Database
-  engine         = "mysql"
-  instance_class = "db.t3.micro"
-  allocated_storage = 20
-  name           = "petersemployeemgmtsystemdb"
-  username       = "Petersomond"
-  password       = "MONDAYtwo12"
+resource "aws_db_instance" "default" {
+  engine             = "mysql"
+  instance_class     = "db.t3.micro"
+  allocated_storage  = 20
+  db_name            = "petersemployeemgmtsystemdb"
+  username           = "Petersomond"
+  password           = "MONDAYtwo12"
   publicly_accessible = true
   skip_final_snapshot = true
 }
