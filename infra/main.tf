@@ -34,11 +34,14 @@ resource "aws_security_group" "backend_sg" {
 # S3 Bucket for Frontend
 resource "aws_s3_bucket" "frontend" {
   bucket = "my-react-app-frontend"
-  acl    = "public-read"
+  }
+  
+  resource "aws_s3_bucket_acl" "frontend_acl" {
+    bucket = aws_s3_bucket.frontend.id
+    acl    = "public-read"
 }
 
 # RDS for Database
-resource "aws_db_instance" "rds" {
   engine         = "mysql"
   instance_class = "db.t3.micro"
   allocated_storage = 20
