@@ -23,6 +23,7 @@ resource "aws_instance" "backend" {
     Name = "BackendInstance"
   }
 }
+
 data "aws_security_group" "existing_backend_sg" {
   filter {
     name   = "group-name"
@@ -45,22 +46,6 @@ resource "aws_security_group" "backend_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-resource "aws_security_group" "backend_sg" {
-  name        = "backend-security-group"
-  description = "Allow inbound traffic for backend"
-  ingress {
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
   egress {
     from_port   = 0
     to_port     = 0
