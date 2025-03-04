@@ -1,5 +1,17 @@
 provider "aws" {
-  region = "us-east-1"
+  region     = "us-east-1"
+  access_key = var.aws_access_key_id
+  secret_key = var.aws_secret_access_key
+}
+
+variable "aws_access_key_id" {
+  description = "AWS Access Key ID"
+  default     = ""
+}
+
+variable "aws_secret_access_key" {
+  description = "AWS Secret Access Key"
+  default     = ""
 }
 
 variable "cloudfront_distribution_id" {
@@ -7,26 +19,31 @@ variable "cloudfront_distribution_id" {
   default     = ""
 }
 
-# Fetch default VPC dynamically
-data "aws_vpc" "default" {
-  default = true
+resource "aws_instance" "backend" {
+  ami           = "ami-05b10e08d247fb927"
+  instance_type = "t2.micro"
+  key_name      = "Petersomond"
+  security_groups = ["backend-security-group"]
+
+  tags = {
+    Name = "BackendInstance"
+  }
 }
 
-# Check for existing security group
 data "aws_security_group" "existing_backend_sg" {
   filter {
     name   = "group-name"
     values = ["backend-security-group"]
   }
-  vpc_id = data.aws_vpc.default.id
+  vpc_id = "vpc-0a39ca2f70436f917"
 }
 
-# Create security group only if it doesn’t exist
 resource "aws_security_group" "backend_sg" {
-  count       = length(data.aws_security_group.existing_backend_sg.id) == 0 ? 1 : 0
+  count = data.aws_security_group.existing_backend_sg.id == "" ? 1 : 0
+
   name        = "backend-security-group"
   description = "Security group for backend servers"
-  vpc_id      = data.aws_vpc.default.id
+  vpc_id      = "vpc-0a39ca2f70436f917"
 
   ingress {
     from_port   = 80
@@ -43,32 +60,17 @@ resource "aws_security_group" "backend_sg" {
   }
 }
 
-# Backend EC2 instance
-resource "aws_instance" "backend" {
-  ami           = "ami-05b10e08d247fb927"
-  instance_type = "t2.micro"
-  key_name      = "Petersomond"
-  security_groups = ["backend-security-group"]
-
-  tags = {
-    Name = "BackendInstance"
-  }
-}
-
-# Check if the S3 bucket exists
 data "aws_s3_bucket" "existing_bucket" {
   bucket = "petersemployeemgmtsystem-s3"
 }
 
-# Create the S3 bucket only if it doesn't exist
 resource "aws_s3_bucket" "frontend" {
-  count  = length(data.aws_s3_bucket.existing_bucket.id) == 0 ? 1 : 0
+  count = data.aws_s3_bucket.existing_bucket.id == "" ? 1 : 0
   bucket = "petersemployeemgmtsystem-s3"
 }
 
-# Bucket policy for public read access
 resource "aws_s3_bucket_policy" "frontend_policy" {
-  count  = length(data.aws_s3_bucket.existing_bucket.id) == 0 ? 1 : 0
+  count = data.aws_s3_bucket.existing_bucket.id == "" ? 1 : 0
   bucket = aws_s3_bucket.frontend[0].id
 
   policy = jsonencode({
@@ -84,10 +86,8 @@ resource "aws_s3_bucket_policy" "frontend_policy" {
   })
 }
 
-# CloudFront Distribution for frontend
 resource "aws_cloudfront_distribution" "frontend_distribution" {
-  count = length(data.aws_s3_bucket.existing_bucket.id) == 0 ? 1 : 0
-
+  count = data.aws_s3_bucket.existing_bucket.id == "" ? 1 : 0
   origin {
     domain_name = aws_s3_bucket.frontend[0].bucket_regional_domain_name
     origin_id   = "S3-petersemployeemgmtsystem-s3"
@@ -129,17 +129,14 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
   }
 }
 
-# Route53 domain setup
 resource "aws_route53_zone" "main" {
   name = "petersomond.com"
 }
 
-# Route53 record pointing to CloudFront
 resource "aws_route53_record" "frontend" {
   zone_id = aws_route53_zone.main.zone_id
-  name    = "www.petersomond.com" # Updated from "www.microfinancebank"
+  name    = "www.microfinancebank"
   type    = "A"
-
   alias {
     name                   = aws_cloudfront_distribution.frontend_distribution[0].domain_name
     zone_id                = aws_cloudfront_distribution.frontend_distribution[0].hosted_zone_id
