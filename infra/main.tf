@@ -138,8 +138,8 @@ resource "aws_route53_record" "frontend" {
   name    = "www.microfinancebank"
   type    = "A"
   alias {
-    name                   = aws_cloudfront_distribution.frontend_distribution[0].domain_name
-    zone_id                = aws_cloudfront_distribution.frontend_distribution[0].hosted_zone_id
+    name                   = https://d1cwxgt8mqb5i4.cloudfront.net
+    zone_id                = E3ANECV25Q3IKZ
     evaluate_target_health = false
   }
 }
