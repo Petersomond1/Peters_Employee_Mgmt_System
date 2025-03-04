@@ -6,12 +6,12 @@ provider "aws" {
 
 variable "aws_access_key_id" {
   description = "AWS Access Key ID"
-  default     = ""
+  type        = string
 }
 
 variable "aws_secret_access_key" {
   description = "AWS Secret Access Key"
-  default     = ""
+  type        = string
 }
 
 variable "cloudfront_distribution_id" {
