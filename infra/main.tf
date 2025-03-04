@@ -6,19 +6,25 @@ provider "aws" {
 
 variable "aws_access_key_id" {
   description = "AWS Access Key ID"
-  default     = ""  # Default can be empty if you want to set it via environment variable
+  default     = ""
 }
 
 variable "aws_secret_access_key" {
   description = "AWS Secret Access Key"
-  default     = ""  # Default can be empty if you want to set it via environment variable
+  default     = ""
+}
+
+variable "cloudfront_distribution_id" {
+  description = "CloudFront Distribution ID"
+  default     = ""
 }
 
 resource "aws_instance" "backend" {
-  ami           = "ami-05b10e08d247fb927"  # Replace with your desired AMI ID
+  ami           = "ami-05b10e08d247fb927"
   instance_type = "t2.micro"
   key_name      = "Petersomond"
   security_groups = ["backend-security-group"]
+
   tags = {
     Name = "BackendInstance"
   }
@@ -33,7 +39,7 @@ data "aws_security_group" "existing_backend_sg" {
 }
 
 resource "aws_security_group" "backend_sg" {
-  count = length(data.aws_security_group.existing_backend_sg.ids) == 0 ? 1 : 0
+  count = data.aws_security_group.existing_backend_sg.id == "" ? 1 : 0
 
   name        = "backend-security-group"
   description = "Security group for backend servers"
@@ -54,21 +60,18 @@ resource "aws_security_group" "backend_sg" {
   }
 }
 
-# Check if S3 Bucket already exists
 data "aws_s3_bucket" "existing_bucket" {
   bucket = "petersemployeemgmtsystem-s3"
 }
 
-# S3 Bucket for Frontend
 resource "aws_s3_bucket" "frontend" {
-  count = length(data.aws_s3_bucket.existing_bucket.id) == 0 ? 1 : 0
-
+  count = data.aws_s3_bucket.existing_bucket.id == "" ? 1 : 0
   bucket = "petersemployeemgmtsystem-s3"
 }
 
-# Example Bucket Policy
 resource "aws_s3_bucket_policy" "frontend_policy" {
-  bucket = aws_s3_bucket.frontend.id
+  count = data.aws_s3_bucket.existing_bucket.id == "" ? 1 : 0
+  bucket = aws_s3_bucket.frontend[0].id
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -83,22 +86,10 @@ resource "aws_s3_bucket_policy" "frontend_policy" {
   })
 }
 
-# RDS for Database
-resource "aws_db_instance" "default" {
-  engine               = "mysql"
-  instance_class       = "db.t3.micro"
-  allocated_storage    = 20
-  db_name              = "petersemployeemgmtsystemdb"
-  username             = "Petersomond"
-  password             = "MONDAYtwo12"
-  publicly_accessible  = true
-  skip_final_snapshot  = true
-}
-
-# CloudFront Distribution for S3
 resource "aws_cloudfront_distribution" "frontend_distribution" {
+  count = data.aws_s3_bucket.existing_bucket.id == "" ? 1 : 0
   origin {
-    domain_name = aws_s3_bucket.frontend.bucket_regional_domain_name
+    domain_name = aws_s3_bucket.frontend[0].bucket_regional_domain_name
     origin_id   = "S3-petersemployeemgmtsystem-s3"
   }
 
@@ -138,7 +129,6 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
   }
 }
 
-# Route 53 Domain
 resource "aws_route53_zone" "main" {
   name = "petersomond.com"
 }
@@ -148,8 +138,8 @@ resource "aws_route53_record" "frontend" {
   name    = "www.microfinancebank"
   type    = "A"
   alias {
-    name                   = aws_cloudfront_distribution.frontend_distribution.domain_name
-    zone_id                = aws_cloudfront_distribution.frontend_distribution.hosted_zone_id
+    name                   = aws_cloudfront_distribution.frontend_distribution[0].domain_name
+    zone_id                = aws_cloudfront_distribution.frontend_distribution[0].hosted_zone_id
     evaluate_target_health = false
   }
 }

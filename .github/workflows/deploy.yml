@@ -25,7 +25,6 @@ jobs:
           npm run build
 
       - name: Upload to S3
-
         run: aws s3 sync Peters_Employee_Mgmt_System/dist/ s3://petersemployeemgmtsystem-s3 --delete
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
