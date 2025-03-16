@@ -1,3 +1,14 @@
+terraform {
+  required_version = ">= 1.0.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 4.0.0"
+    }
+  }
+}
+
 provider "aws" {
   region     = "us-east-1"
   access_key = var.aws_access_key_id
@@ -16,6 +27,7 @@ variable "aws_secret_access_key" {
 
 variable "cloudfront_distribution_id" {
   description = "CloudFront Distribution ID"
+  type        = string
   default     = ""
 }
 
@@ -30,13 +42,13 @@ resource "aws_instance" "backend" {
   }
 }
 
-data "aws_security_group" "existing_backend_sg" {
-  filter {
-    name   = "group-name"
-    values = ["backend-security-group"]
-  }
-  vpc_id = "vpc-0a39ca2f70436f917"
-}
+# data "aws_security_group" "existing_backend_sg" {
+#   filter {
+#     name   = "group-name"
+#     values = ["backend-security-group"]
+#   }
+#   vpc_id = "vpc-0a39ca2f70436f917"
+# }
 
 resource "aws_security_group" "backend_sg" {
   name        = "backend-security-group"
@@ -49,6 +61,14 @@ resource "aws_security_group" "backend_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
 
   egress {
     from_port   = 0
