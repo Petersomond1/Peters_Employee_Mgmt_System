@@ -157,7 +157,7 @@ resource "aws_route53_record" "frontend" {
   type    = "A"
   alias {
     name                   = "d1cwxgt8mqb5i4.cloudfront.net"
-    zone_id                = "E3ANECV25Q3IKZ"
+    zone_id                = "Z2FDTNDATAQYW2"
     evaluate_target_health = false
   }
 }
