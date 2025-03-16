@@ -64,7 +64,6 @@ terraform.tfstate*
 terraform.tfstate.backup*
 *.pem
 .terraform/
-.terraform/
 infra/.terraform/
 .terraform/
 infra/.terraform/

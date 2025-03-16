@@ -10865,6 +10865,17 @@ By following these steps, you will securely store your JWT secrets in the `.env`
 
 Similar code found with 2 license types
 
+
+
+
+
+
+
+
+
+
+
+
 Petersomond1: I now want to implement CI/CD Deployment of this React js Frontend & Node.js Backend on AWS.
 I want to implement a secure, automated CI/CD pipeline using AWS services and tools like GitHub Actions or Jenkins, Terraform, and AWS services (EC2, RDS, Route 53, CloudFront, etc.). I want intend to deploy the frontend hosting with AWS S3 and CloudFront, and the Backend Hosting with EC2 (Linux), the Domain & Routing	with Route 53, my Database	with RDS (MySQL), the CI/CD Pipeline	with GitHub Actions, the Infrastructure as Code (IaC) with Terraform, Secret Management	with either AWS Secrets Manager or Environment variables. """ this path will illustrate my file structure before at development before build. """ Frontend folder
 "C:\Users\peter\ReactProjects\Peters_Employee_Mgmt_System\Peters_Employee_Mgmt_System\node_modules"

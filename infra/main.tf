@@ -39,10 +39,8 @@ data "aws_security_group" "existing_backend_sg" {
 }
 
 resource "aws_security_group" "backend_sg" {
-  count = data.aws_security_group.existing_backend_sg.id == "" ? 1 : 0
-
   name        = "backend-security-group"
-  description = "Security group for backend servers"
+  description = "Allow inbound traffic for backend"
   vpc_id      = "vpc-0a39ca2f70436f917"
 
   ingress {
@@ -143,3 +141,15 @@ resource "aws_route53_record" "frontend" {
     evaluate_target_health = false
   }
 }
+
+/*
+The provided Terraform configuration defines the infrastructure setup for an AWS environment. It begins with the AWS provider configuration, specifying the region as "us-east-1" and using access and secret keys stored in variables for authentication. These variables, `aws_access_key_id` and `aws_secret_access_key`, are defined with descriptions and types to ensure they are correctly populated.
+
+Next, the configuration defines an EC2 instance resource named "backend". This instance uses a specific Amazon Machine Image (AMI) and is of type "t2.micro". It is associated with a security group named "backend-security-group" and tagged with the name "BackendInstance". The security group is either created or referenced based on its existence in the specified VPC.
+
+The configuration also includes a data source to check for an existing S3 bucket named "petersemployeemgmtsystem-s3". If the bucket does not exist, a new S3 bucket resource is created. Additionally, a bucket policy is applied to allow public read access to the objects within the bucket.
+
+A CloudFront distribution is defined to serve the content from the S3 bucket. The distribution is configured with various settings, including allowed methods, cache behaviors, and viewer protocol policies. It uses the default CloudFront certificate for HTTPS.
+
+Finally, the configuration sets up a Route 53 hosted zone for the domain "petersomond.com" and creates a DNS record to point to the CloudFront distribution. This ensures that the domain "www.microfinancebank" resolves to the CloudFront distribution, enabling users to access the React app hosted in the S3 bucket through the specified domain.
+*/
